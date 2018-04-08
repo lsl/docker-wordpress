@@ -1,0 +1,48 @@
+# https://docs.docker.com/compose/compose-file/compose-versioning/
+version: '3.6'
+
+# Use `docker-compose down --volumes` to clear.
+volumes:
+  mysql: # MySQL data dir
+  uploads: # wp-content/uploads dir
+
+services:
+  # Isn't required but nice to have if you're working on
+  # or modifying the main image.
+  base:
+    image: lslio/wordpress
+    build: ../
+    entrypoint: /bin/true
+
+  # Reverse proxy
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+
+  # Web service
+  web:
+    build: ./site
+    volumes:
+      - uploads:/var/www/wordpress/wp-content/uploads:rw
+    environment:
+      VIRTUAL_HOST: "example.localhost"
+      DB_NAME: wordpress
+      DB_USER: wordpress
+      DB_PASSWORD: wordpress
+      DB_HOST: mysql
+      WP_DEBUG: 'false'
+
+  # Database
+  mysql:
+    image: mariadb:10.3.5
+    volumes:
+      - mysql:/var/lib/mysql # Local volume mount for persistence
+    command: ["mysqld", "--default-time-zone=+00:00"]
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress

@@ -1,0 +1,14 @@
+{
+    "name": "example",
+    "description": "https://example.com",
+    "repositories":[
+        {
+            "type":"composer",
+            "url":"https://wpackagist.org"
+        }
+    ],
+    "require": {
+        "wpackagist-plugin/all-in-one-wp-migration": "^6.65",
+        "wpackagist-plugin/wp-lcache": "^0.6.1"
+    }
+}

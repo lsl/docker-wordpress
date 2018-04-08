@@ -1,0 +1,13 @@
+#!/usr/bin/env php
+<?php
+
+$salts = file_get_contents("https://api.wordpress.org/secret-key/1.1/salt/");
+
+echo "\n";
+
+foreach (array_filter(explode("\n", $salts), "trim") as $salt) {
+    $salt = explode("'", $salt);
+    echo "ENV {$salt['1']}='{$salt['3']}'\n";
+}
+
+echo "\n";
