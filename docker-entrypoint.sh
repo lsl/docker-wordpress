@@ -5,10 +5,10 @@ SERVER_PROTO=${SERVER_PROTO:-http}
 SERVER_NAME=${VIRTUAL_HOST:-${SERVER_NAME:-localhost}}
 SERVER_ALIAS=${SERVER_ALIAS:-''}
 
-envsubst '$SERVER_NAME $SERVER_ALIAS' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
+envsubst '$SERVER_NAME $SERVER_ALIAS' < /nginx.conf.template > /etc/nginx/nginx.conf
 
 # WordPress subs
 WP_SITE_URL=${WP_SITE_URL:-$SERVER_PROTO://$SERVER_NAME}
 WP_HOME=${WP_HOME:-$WP_SITE_URL}
 
-supervisord -c /etc/supervisord.conf
+supervisord -c /supervisord.conf

@@ -20,12 +20,29 @@ RUN find /app/wordpress -type f -exec chmod 644 {} \;
 # Build image
 FROM alpine:3.7
 
-# Set user
-# Note: implicitly creates: /var/www, www group @ gid 1000
-# Previously using -G wheel (this might get reverted)
-RUN adduser -D -u 1000 -g 1000 -s /bin/sh -h /var/www www-data
+# Create user
+RUN adduser -D -u 1000 -g 1000 -s /bin/sh www-data && \
+    mkdir -p /www && \
+    chown -R www-data:www-data /www
 
-# PHP/FPM + Modules
+# Install tini - 'cause zombies - see: https://github.com/ochinchina/supervisord/issues/60
+# (also pkill hack)
+RUN apk add --no-cache --update tini
+
+# Install a golang port of supervisord
+COPY --from=ochinchina/supervisord:latest /usr/local/bin/supervisord /usr/bin/supervisord
+
+# Install nginx & gettext (envsubst)
+# Create cachedir and fix permissions
+RUN apk add --no-cache --update \
+    gettext \
+    nginx && \
+    mkdir -p /var/cache/nginx && \
+    chown -R www-data:www-data /var/cache/nginx && \
+    chown -R www-data:www-data /var/lib/nginx && \
+    chown -R www-data:www-data /var/tmp/nginx
+
+# Install PHP/FPM + Modules
 RUN apk add --no-cache --update \
     php7 \
     php7-apcu \
@@ -58,28 +75,13 @@ RUN apk add --no-cache --update \
     php7-zip \
     php7-zlib
 
-# tini - 'cause zombies - see: https://github.com/ochinchina/supervisord/issues/60
-# gettext - nginx env substitution
-RUN apk add --no-cache --update \
-    tini \
-    gettext \
-    nginx && \
-    rm -rf /var/www/localhost
-
-# Fix nginx dirs/perms
-RUN mkdir -p /var/cache/nginx && \
-    chown -R www-data:www-data /var/cache/nginx && \
-    chown -R www-data:www-data /var/lib/nginx && \
-    chown -R www-data:www-data /var/tmp/nginx
-
-# Install a golang port of supervisord
-COPY --from=ochinchina/supervisord:latest /usr/local/bin/supervisord /usr/bin/supervisord
-
 # Runtime env vars are envstub'd into config during entrypoint
-# Defaults: proto: http, name: localhost, alias: ''
-ENV SERVER_PROTO='http'
-ENV SERVER_NAME='localhost'
-ENV SERVER_ALIAS=''
+ENV SERVER_PROTO="http"
+ENV SERVER_NAME="localhost"
+ENV SERVER_ALIAS=""
+
+# Alias defaults to empty, example usage:
+# SERVER_ALIAS='www.example.com'
 
 # Wordpress config settings
 ENV DB_NAME='wordpress'
@@ -100,16 +102,17 @@ ENV SECURE_AUTH_SALT='set me'
 ENV LOGGED_IN_SALT='set me'
 ENV NONCE_SALT='set me'
 
-COPY /manifest /
+COPY ./supervisord.conf /supervisord.conf
+COPY ./php-fpm-www.conf /etc/php7/php-fpm.d/www.conf
+COPY ./nginx.conf.template /nginx.conf.template
+COPY ./docker-entrypoint.sh /docker-entrypoint.sh
+COPY ./salt /usr/bin/salt
 
-COPY --from=composer --chown=www-data:www-data /app/wordpress /var/www/wordpress
+COPY --from=composer --chown=www-data:www-data /app/wordpress /www/wordpress
+COPY --chown=www-data:www-data ./wp-config.php /www/wordpress/wp-config.php
 
-COPY --chown=www-data:www-data wp-config.php /var/www/wordpress/wp-config.php
-
-WORKDIR /var/www/wordpress
-
+# Nginx on :80
 EXPOSE 80
-
+WORKDIR /www
 ENTRYPOINT ["tini", "--"]
-CMD ["/docker-entrypoint.sh"]
-
+CMD [ "/docker-entrypoint.sh" ]

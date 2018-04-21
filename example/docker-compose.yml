@@ -26,14 +26,15 @@ services:
   web:
     build: ./site
     volumes:
-      - uploads:/var/www/wordpress/wp-content/uploads:rw
+      - uploads:/www/wordpress/wp-content/uploads:rw
     environment:
       VIRTUAL_HOST: "example.localhost"
+      SERVER_PROTO: "http"
       DB_NAME: wordpress
       DB_USER: wordpress
       DB_PASSWORD: wordpress
       DB_HOST: mysql
-      WP_DEBUG: 'false'
+      WP_DEBUG: "true"
 
   # Database
   mysql:

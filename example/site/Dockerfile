@@ -1,11 +1,7 @@
 FROM lslio/composer:latest as composer
 
 COPY ./composer.* /app/
-RUN composer-install
-
-# Must use plugins (auto enable)
-RUN mv /app/wordpress/wp-content/plugins/all-in-one-wp-migration /app/wordpress/wp-content/mu-plugins/all-in-one-wp-migration
-RUN mv /app/wordpress/wp-content/plugins/lcache /app/wordpress/wp-content/mu-plugins/lcache
+RUN composer-install -d /app
 
 # Final Build
 FROM lslio/wordpress:latest
@@ -32,9 +28,9 @@ ENV SECURE_AUTH_SALT='?!LQjInJJf+HRBN!1mA7[iyRZICG=!lBW(]fC5|1Q52RzY>3-]Y3q*XBv2
 ENV LOGGED_IN_SALT='v2y2x%|cHs6v*thfr~MZG~[MNB-`r9Y~X_ ]f-Q9POmXu-3)p.Juo2-QC!hc^$IL'
 ENV NONCE_SALT='0zK_Ww(ljs]w?GHm}6as]w^_wP%!3Jc<~,Dt3pxS{`Rg$$9tsM[aRz$DL^KHW+Kp'
 
-COPY --from=composer --chown=www:www /app/wp-content /var/www/wordpress/wp-content
+COPY --from=composer --chown=www-data:www-data /app/wp-content /www/wordpress/wp-content
 
 # lcache needs some help
-USER www
-RUN ln -s /var/www/wordpress/wp-content/mu-plugins/wp-lcache/object-cache.php /var/www/wordpress/wp-content/object-cache.php
+USER www-data
+RUN ln -s /www/wordpress/wp-content/mu-plugins/wp-lcache/object-cache.php /www/wordpress/wp-content/object-cache.php
 USER root
