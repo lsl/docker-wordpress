@@ -14,7 +14,7 @@ This image is *not* intended to be used stand-alone, while it comes with a worki
 
 Current limitations:
 - wp-content/uploads needs to be mounted to something like NFS for use on multi-server setups.
-- Plugins that leverage disk for caching need to be avoided (e.g. w3-total-cache, fvm, autoptimize.)
+- plugins that leverage disk for caching need to be avoided (e.g. w3-total-cache, fvm, autoptimize.)
 - plugins and themes need to be pre-installed with composer.
 - wp-cli is out due to requiring an unattainable db connection.
 

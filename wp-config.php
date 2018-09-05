@@ -20,7 +20,7 @@
 
 // Configured by /docker-entrypoint.sh
 define( 'WP_SITE_URL', getenv( 'WP_SITE_URL' ) ?: 'http://localhost' );
-define( 'WP_HOME', getenv( 'WP_HOME' ) ?: 'http://localhost' );
+define( 'WP_HOME', getenv( 'WP_SITE_URL' ) ?: 'http://localhost' );
 define( 'DB_NAME', getenv( 'DB_NAME' ) ?: 'wordpress' );
 define( 'DB_USER', getenv( 'DB_USER' ) ?: 'wordpress' );
 define( 'DB_PASSWORD', getenv( 'DB_PASSWORD' ?: 'wordpress' ) );

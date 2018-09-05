@@ -7,11 +7,11 @@ RUN composer-install -d /app
 FROM lslio/wordpress:latest
 
 # Used by nginx + wordpress
-ENV SERVER_PROTO=https
 ENV SERVER_NAME=example.com
 ENV SERVER_ALIAS=www.example.com
 
 # Used by Wordpress
+ENV WP_SITE_URL=http://example.com
 ENV DB_NAME='wordpress'
 ENV DB_USER='wordpress'
 ENV DB_PASSWORD='wordpress'

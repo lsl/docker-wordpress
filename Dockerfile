@@ -36,8 +36,10 @@ COPY --from=ochinchina/supervisord:latest /usr/local/bin/supervisord /usr/bin/su
 # Create cachedir and fix permissions
 RUN apk add --no-cache --update \
     gettext \
-    nginx && \
-    mkdir -p /var/cache/nginx && \
+    nginx \
+    nginx-mod-http-cache-purge
+
+RUN mkdir -p /var/cache/nginx && \
     chown -R www-data:www-data /var/cache/nginx && \
     chown -R www-data:www-data /var/lib/nginx && \
     chown -R www-data:www-data /var/tmp/nginx
@@ -76,7 +78,6 @@ RUN apk add --no-cache --update \
     php7-zlib
 
 # Runtime env vars are envstub'd into config during entrypoint
-ENV SERVER_PROTO="http"
 ENV SERVER_NAME="localhost"
 ENV SERVER_ALIAS=""
 
@@ -84,6 +85,7 @@ ENV SERVER_ALIAS=""
 # SERVER_ALIAS='www.example.com'
 
 # Wordpress config settings
+ENV WP_SITE_URL='http://localhost'
 ENV DB_NAME='wordpress'
 ENV DB_USER='wordpress'
 ENV DB_PASSWORD='wordpress'
