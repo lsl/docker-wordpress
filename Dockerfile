@@ -18,7 +18,7 @@ RUN find /app/wordpress -type d -exec chmod 755 {} \;
 RUN find /app/wordpress -type f -exec chmod 644 {} \;
 
 # Build image
-FROM alpine:3.7
+FROM alpine:3.8
 
 # Create user
 RUN adduser -D -u 1000 -g 1000 -s /bin/sh www-data && \
