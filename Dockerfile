@@ -1,7 +1,7 @@
 FROM lslio/composer:latest as composer
 
 # Installs WordPress into /app/wordpress
-RUN composer-require johnpbloch/wordpress:^4.9
+RUN composer-require johnpbloch/wordpress:^5.1
 
 # Delete hello dolly
 RUN rm /app/wordpress/wp-content/plugins/hello.php

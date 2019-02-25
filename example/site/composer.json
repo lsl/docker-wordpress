@@ -10,6 +10,7 @@
     "require": {
         "wpackagist-plugin/all-in-one-wp-migration": "^6.65",
         "wpackagist-plugin/wp-lcache": "^0.6.1",
-        "wpackagist-plugin/nginx-helper": "^1.9.11"
+        "wpackagist-plugin/nginx-helper": "^1.9.11",
+        "wpackagist-plugin/gutenberg": "^4.5"
     }
 }
