@@ -78,5 +78,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', dirname( __FILE__ ) . '/' );
 }
 
+/**
+ * Reverse Proxy Support
+ *
+ * @see https://codex.wordpress.org/Administration_Over_SSL
+ */
+define( 'FORCE_SSL_ADMIN', getenv( 'FORCE_SSL_ADMIN' ) ?: false );
+
+if ( strpos( $_SERVER['HTTP_X_FORWARDED_PROTO'], 'https' ) !== false ) {
+    $_SERVER['HTTPS'] = 'on';
+}
+
 /** Sets up WordPress vars and included files. */
 require_once( ABSPATH . 'wp-settings.php' );
